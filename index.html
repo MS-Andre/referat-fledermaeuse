@@ -72,7 +72,28 @@
   .tip{background:#ffffff22;border-left:6px solid var(--pink);border-radius:12px;padding:10px 14px;margin:8px 0}
   body.full header,body.full nav{display:none}
   body.full #stage{min-height:80vh}
-  @media(max-width:600px){body{font-size:17px}h1{font-size:1.8em}}
+  nav button .ic{display:inline;margin-right:6px}
+  button,.art,.flip,.part,.pin{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  @media(max-width:600px){
+    body{font-size:17px;padding-bottom:84px}
+    header{padding:12px 8px 0}header div{font-size:2em!important}
+    h1{font-size:1.6em}
+    nav{position:fixed;top:auto;bottom:0;left:0;right:0;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));border-top:2px solid var(--purple);scrollbar-width:none}
+    nav::-webkit-scrollbar{display:none}
+    nav button{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:0;min-width:64px;padding:6px 10px;border-radius:16px;font-size:.62em;line-height:1.2;box-shadow:none}
+    nav button .ic{display:block;margin:0;font-size:2em}
+    nav button.active{box-shadow:0 0 0 3px var(--moon)}
+    main{padding:8px 10px}
+    h2{font-size:1.4em}
+    .card{padding:12px;border-radius:16px}
+    #stage{padding:18px 12px;min-height:300px}
+    #stage .big{font-size:3.5em}#stage h3{font-size:1.6em}#stage p{font-size:1.2em}
+    .ctl .btn{padding:10px 14px}
+    #sky{height:260px}
+    .flip{height:210px}
+    #partbtns .btn{font-size:.7em}
+    body.full{padding-bottom:0}
+  }
 </style>
 </head>
 <body>
@@ -212,7 +233,9 @@
 
 <script>
 const $=s=>document.querySelector(s);
+document.querySelectorAll('#nav button').forEach(b=>{const t=b.textContent.trim(),i=t.indexOf(' ');b.innerHTML=`<span class="ic">${t.slice(0,i)}</span><span>${t.slice(i+1)}</span>`;});
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
+  b.scrollIntoView({inline:'center',block:'nearest'});
   document.querySelectorAll('#nav button,section').forEach(e=>e.classList.remove('active'));
   b.classList.add('active');$('#'+b.dataset.t).classList.add('active');
   window.scrollTo(0,0);
