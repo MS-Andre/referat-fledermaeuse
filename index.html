@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rosalies Fledermaus-Welt</title>
+<style>
+  :root{--night:#1b1440;--night2:#2d2266;--moon:#ffe9a8;--pink:#ff7eb6;--mint:#7dffd4;--purple:#a78bfa}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Comic Sans MS","Trebuchet MS",Verdana,sans-serif;background:linear-gradient(#1b1440,#3b2a8c 60%,#5b3fb5);color:#fff;font-size:20px;line-height:1.5;min-height:100vh}
+  header{text-align:center;padding:24px 12px 8px}
+  h1{font-size:2.4em;margin:0;color:var(--moon);text-shadow:0 0 18px #ffe9a8aa}
+  nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px;position:sticky;top:0;background:#1b1440ee;z-index:5}
+  nav button,.btn{font:inherit;font-weight:bold;border:0;border-radius:999px;padding:10px 20px;background:var(--pink);color:#2b0a3d;cursor:pointer;box-shadow:0 4px 0 #b24a82}
+  nav button.active{background:var(--mint);box-shadow:0 4px 0 #3fb994}
+  nav button:active,.btn:active{transform:translateY(3px);box-shadow:none}
+  main{max-width:900px;margin:0 auto;padding:16px}
+  section{display:none;animation:fade .4s}
+  section.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+  h2{color:var(--mint);font-size:1.8em;margin-top:8px}
+  .card{background:#ffffff1c;border:2px solid #ffffff33;border-radius:22px;padding:18px;margin:14px 0}
+  .bat{font-size:6em;text-align:center;animation:float 3s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-14px) rotate(4deg)}}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .flip{height:190px;perspective:800px;cursor:pointer}
+  .flip>div{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+  .flip.on>div{transform:rotateY(180deg)}
+  .flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px}
+  .flip .f{background:linear-gradient(135deg,var(--purple),var(--pink));color:#2b0a3d;font-weight:bold;font-size:1.1em}
+  .flip .f span{font-size:3em}
+  .flip .b{background:var(--moon);color:#2b1a4d;transform:rotateY(180deg);font-size:.95em}
+  table{width:100%;border-collapse:collapse}
+  td{padding:8px;border-bottom:1px solid #ffffff33}
+  td:first-child{font-weight:bold;color:var(--moon);white-space:nowrap}
+  #sky{position:relative;height:320px;background:#0d0a26;border-radius:22px;overflow:hidden;border:3px solid var(--purple)}
+  .moth{position:absolute;font-size:2.4em;cursor:pointer;user-select:none;transition:left 4s linear,top 4s linear}
+  .ring{position:absolute;border:3px solid var(--mint);border-radius:50%;pointer-events:none;animation:ring .8s forwards}
+  @keyframes ring{from{width:10px;height:10px;opacity:1;margin:-5px}to{width:200px;height:200px;opacity:0;margin:-100px}}
+  #quizq{font-size:1.3em;font-weight:bold}
+  .ans{display:block;width:100%;margin:8px 0;text-align:left;font:inherit;padding:12px 16px;border-radius:16px;border:2px solid #fff5;background:#ffffff22;color:#fff;cursor:pointer}
+  .ans.ok{background:#2ecc71;color:#06280f}.ans.no{background:#e74c3c}
+  #batsvg{width:100%;background:radial-gradient(circle at 50% 30%,#4b3a9a,#150f33);border-radius:22px;border:3px solid var(--purple)}
+  #batsvg .mem{fill:url(#wg);stroke:#1b1440;stroke-width:3}
+  #batsvg .bone{fill:none;stroke:#d9c7f5;stroke-width:5;stroke-linecap:round}
+  #batsvg .part{cursor:pointer;transition:filter .2s}
+  #batsvg .part:hover{filter:brightness(1.35)}
+  #batsvg .part.sel{filter:drop-shadow(0 0 8px #ffe9a8) brightness(1.3)}
+  #batsvg .pin circle{fill:var(--moon);stroke:#2b1a4d;stroke-width:3;animation:pulse 1.6s infinite;transform-box:fill-box;transform-origin:center}
+  #batsvg .pin text{font:bold 18px sans-serif;fill:#2b1a4d;text-anchor:middle;pointer-events:none}
+  @keyframes pulse{50%{transform:scale(1.2)}}
+  #info{background:var(--moon);color:#2b1a4d;font-size:1.05em}
+  #info h3{margin:0 0 6px;font-size:1.5em;color:#5b2fb5}
+  #info b{color:#b0306a}
+  #partbtns .btn{font-size:.8em;padding:6px 12px}
+  .art{cursor:pointer;border-radius:22px;overflow:hidden;background:#ffffff1c;border:3px solid #ffffff33;transition:transform .2s}
+  .art:hover{transform:scale(1.03)}
+  .art.sel{border-color:var(--moon)}
+  .art img{width:100%;height:190px;object-fit:cover;display:block}
+  .art div{padding:8px 12px;font-weight:bold;text-align:center}
+  #artinfo{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+  #artinfo img{width:min(320px,100%);border-radius:16px}
+  #artinfo .txt{flex:1;min-width:240px}
+  #artinfo h3{margin:0;color:var(--moon);font-size:1.6em}
+  #artinfo small{display:block;margin-bottom:8px;opacity:.8}
+  /* Präsentation */
+  #stage{background:var(--moon);color:#2b1a4d;border-radius:26px;min-height:380px;padding:30px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  #stage .big{font-size:5em}
+  #stage h3{font-size:2.2em;margin:.2em 0;color:#5b2fb5}
+  #stage p{font-size:1.5em;margin:.3em 0}
+  .ctl{display:flex;justify-content:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+  .tip{background:#ffffff22;border-left:6px solid var(--pink);border-radius:12px;padding:10px 14px;margin:8px 0}
+  body.full header,body.full nav{display:none}
+  body.full #stage{min-height:80vh}
+  @media(max-width:600px){body{font-size:17px}h1{font-size:1.8em}}
+</style>
+</head>
+<body>
+<header><div style="font-size:3em">🦇🌙</div><h1>Rosalies Fledermaus-Welt</h1></header>
+<nav id="nav">
+  <button data-t="start" class="active">🏠 Start</button>
+  <button data-t="steck">📋 Steckbrief</button>
+  <button data-t="koerper">🔍 Körper</button>
+  <button data-t="arten">📸 Arten</button>
+  <button data-t="fakten">⭐ Fakten</button>
+  <button data-t="echo">🔊 Echo-Spiel</button>
+  <button data-t="quiz">❓ Quiz</button>
+  <button data-t="ref">🎤 Mein Referat</button>
+  <button data-t="tipps">💡 Üben</button>
+</nav>
+<main>
+
+<section id="start" class="active">
+  <div class="bat">🦇</div>
+  <div class="card"><h2>Hallo Rosalie!</h2>
+  <p>Willkommen in deiner Fledermaus-Welt. Hier lernst du viel über Fledermäuse, spielst und übst dein Referat.</p>
+  <p>Fang mit dem <b>Steckbrief</b> an. Dann dreh die <b>Fakten-Karten</b> um. Danach: <b>Echo-Spiel</b> und <b>Quiz</b>! Wenn du bereit bist, übst du mit <b>Mein Referat</b>.</p></div>
+</section>
+
+<section id="steck">
+  <h2>📋 Steckbrief Fledermaus</h2>
+  <div class="card"><table>
+    <tr><td>Was ist sie?</td><td>Ein Säugetier – wie du, ein Hund oder eine Katze. Sie ist <b>kein</b> Vogel und <b>keine</b> Maus!</td></tr>
+    <tr><td>Besonderes</td><td>Die einzigen Säugetiere, die richtig fliegen können.</td></tr>
+    <tr><td>Wann wach?</td><td>Nachts. Sie ist nachtaktiv.</td></tr>
+    <tr><td>Schlafen</td><td>Tagsüber, mit dem Kopf nach unten, in Höhlen, auf Dachböden oder in Baumhöhlen.</td></tr>
+    <tr><td>Essen</td><td>Die Fledermäuse bei uns fressen Insekten, z. B. Mücken und Nachtfalter.</td></tr>
+    <tr><td>Größe</td><td>Die Zwergfledermaus ist nur so groß wie ein Daumen und wiegt etwa so viel wie ein Stück Würfelzucker (ca. 5 g).</td></tr>
+    <tr><td>Babys</td><td>Meist 1 Baby pro Jahr. Es trinkt Milch von der Mama.</td></tr>
+    <tr><td>Zuhause</td><td>Fast überall auf der Welt, nur nicht in der Arktis und Antarktis.</td></tr>
+    <tr><td>In Deutschland</td><td>Etwa 25 Arten. Alle sind geschützt!</td></tr>
+  </table></div>
+</section>
+
+<section id="koerper">
+  <h2>🔍 So ist eine Fledermaus gebaut</h2>
+  <p>Tippe auf die gelben Punkte oder direkt auf einen Körperteil!</p>
+  <svg id="batsvg" viewBox="0 0 800 440" role="img" aria-label="Fledermaus">
+    <defs>
+      <linearGradient id="wg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6d4c9f"/><stop offset="1" stop-color="#3d2a6b"/></linearGradient>
+      <radialGradient id="fg" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#9a6b4b"/><stop offset="1" stop-color="#4e3022"/></radialGradient>
+    </defs>
+    <g id="wingL">
+      <g class="part" data-k="fluegel"><path class="mem" d="M365 190 L230 120 L40 95 Q75 170 60 230 Q100 262 130 322 Q190 318 250 348 Q310 335 362 312 Z"/></g>
+      <g class="part" data-k="finger"><path class="bone" d="M230 120 L40 95 M230 120 L60 230 M230 120 L130 322 M230 120 L250 348 M365 190 L230 120"/></g>
+      <g class="part" data-k="daumen"><path class="bone" d="M232 118 L215 88"/><path d="M215 88 q-8 -14 4 -22 q-2 10 6 20z" fill="#f5e6c8"/></g>
+    </g>
+    <g class="part" data-k="schwanz"><path class="mem" d="M372 318 L428 318 L458 392 Q400 412 342 392 Z"/></g>
+    <g class="part" data-k="fuesse">
+      <path class="bone" d="M375 330 L358 372 M425 330 L442 372"/>
+      <path d="M358 372 l-8 14 M358 372 l0 16 M358 372 l8 12 M442 372 l8 14 M442 372 l0 16 M442 372 l-8 12" stroke="#f5e6c8" stroke-width="4" stroke-linecap="round" fill="none"/>
+    </g>
+    <g class="part" data-k="fell"><ellipse cx="400" cy="255" rx="50" ry="85" fill="url(#fg)"/></g>
+    <g class="part" data-k="ohren">
+      <path d="M362 130 L336 38 Q372 70 388 112 Z" fill="#7a4f37" stroke="#2b1a14" stroke-width="3"/>
+      <path d="M438 130 L464 38 Q428 70 412 112 Z" fill="#7a4f37" stroke="#2b1a14" stroke-width="3"/>
+      <path d="M358 118 L343 62 Q366 84 378 112 Z M442 118 L457 62 Q434 84 422 112 Z" fill="#e8a0a8"/>
+    </g>
+    <g class="part" data-k="kopf"><circle cx="400" cy="150" r="46" fill="url(#fg)" stroke="#2b1a14" stroke-width="3"/></g>
+    <g class="part" data-k="augen">
+      <circle cx="380" cy="143" r="9" fill="#111"/><circle cx="420" cy="143" r="9" fill="#111"/>
+      <circle cx="383" cy="140" r="3" fill="#fff"/><circle cx="423" cy="140" r="3" fill="#fff"/>
+    </g>
+    <g class="part" data-k="nase"><ellipse cx="400" cy="162" rx="9" ry="6" fill="#e8a0a8" stroke="#2b1a14" stroke-width="2"/></g>
+    <g class="part" data-k="zaehne">
+      <path d="M382 176 Q400 196 418 176 Q400 186 382 176Z" fill="#3a1218" stroke="#2b1a14" stroke-width="2"/>
+      <path d="M386 178 l3 9 l3 -8 M404 181 l3 8 l3 -9 M394 182 l2 6 l2 -6" fill="#fff" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+    <g id="pins"></g>
+  </svg>
+  <div class="card" id="info"><h3>👆 Tippe auf einen Körperteil!</h3><p>Dann erfährst du, wie er funktioniert, wofür er da ist und woraus er besteht.</p></div>
+  <div class="ctl" id="partbtns"></div>
+</section>
+
+<section id="arten">
+  <h2>📸 Fledermaus-Arten</h2>
+  <p>Es gibt über 1400 Arten auf der Welt! Tippe auf ein Foto, um mehr zu erfahren.</p>
+  <div class="grid" id="gallery"></div>
+  <div class="card" id="artinfo" style="display:none"></div>
+  <p style="font-size:.7em;opacity:.8">Fotos von Wikimedia Commons. <span id="credits"></span></p>
+</section>
+
+<section id="fakten">
+  <h2>⭐ Fakten-Karten</h2><p>Tippe auf eine Karte, um sie umzudrehen!</p>
+  <div class="grid" id="cards"></div>
+</section>
+
+<section id="echo">
+  <h2>🔊 Echo-Spiel</h2>
+  <div class="card"><p>Fledermäuse rufen ganz hohe Töne, die wir Menschen nicht hören (<b>Ultraschall</b>). Der Ton prallt an einem Insekt ab und kommt als <b>Echo</b> zurück. So wissen sie, wo die Beute ist – auch im Dunkeln. Das nennt man <b>Echoortung</b>.</p>
+  <p><b>Spiel:</b> Klicke in den Nachthimmel, um zu rufen. Fang die Falter 🦋 – tippe direkt auf sie!</p></div>
+  <div id="sky"><div style="position:absolute;right:14px;top:8px;font-weight:bold">Gefangen: <span id="score">0</span></div></div>
+  <div class="ctl"><button class="btn" id="startEcho">▶ Neues Spiel</button></div>
+</section>
+
+<section id="quiz">
+  <h2>❓ Fledermaus-Quiz</h2>
+  <div class="card"><div id="quizq"></div><div id="quizans"></div><p id="quizfb"></p>
+  <button class="btn" id="quizNext" style="display:none">Weiter ➡</button></div>
+</section>
+
+<section id="ref">
+  <h2>🎤 Mein Referat</h2>
+  <p>Drücke <b>Vollbild</b> und zeige die Folien. Mit 🔈 liest der Computer vor – zum Üben!</p>
+  <div id="stage"></div>
+  <div class="ctl">
+    <button class="btn" id="prev">⬅ Zurück</button>
+    <span id="pg" style="align-self:center;font-weight:bold"></span>
+    <button class="btn" id="next">Weiter ➡</button>
+    <button class="btn" id="say">🔈 Vorlesen</button>
+    <button class="btn" id="fs">⛶ Vollbild</button>
+  </div>
+  <p style="text-align:center;opacity:.8">Tipp: Mit den Pfeiltasten ← → kannst du blättern.</p>
+</section>
+
+<section id="tipps">
+  <h2>💡 So klappt dein Referat</h2>
+  <div class="tip">🧍 <b>Stell dich gerade hin</b> und atme einmal tief durch.</div>
+  <div class="tip">👀 <b>Schau die Klasse an</b>, nicht nur auf den Zettel.</div>
+  <div class="tip">🐢 <b>Sprich langsam und laut.</b> Lieber zu langsam als zu schnell!</div>
+  <div class="tip">⏸ <b>Mach kleine Pausen</b> nach jedem Satz.</div>
+  <div class="tip">🙋 <b>Frag am Ende:</b> „Habt ihr noch Fragen?“</div>
+  <div class="tip">😅 <b>Vergessen?</b> Kein Problem! Schau auf die Folie, atme und mach weiter.</div>
+  <div class="card"><h3>Übe so:</h3>
+  <p>1. Lies das Referat einmal laut vor.<br>2. Übe vor dem Spiegel oder einem Kuscheltier.<br>3. Übe vor Mama oder Papa.<br>4. Am Ende kannst du fast alles auswendig. 🌟</p></div>
+  <div class="card"><h3>Mögliche Fragen der Klasse</h3>
+  <p><b>Saugen Fledermäuse Blut?</b> Bei uns nicht! Nur 3 Vampir-Arten in Süd- und Mittelamerika, und die lecken Blut von Tieren.<br>
+  <b>Sind sie blind?</b> Nein, sie können sehen. Nachts hilft ihnen zusätzlich das Echo.<br>
+  <b>Verfangen sie sich in den Haaren?</b> Nein, das ist ein Märchen.</p></div>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#nav button,section').forEach(e=>e.classList.remove('active'));
+  b.classList.add('active');$('#'+b.dataset.t).classList.add('active');
+  window.scrollTo(0,0);
+});
+
+/* Körper-Bild */
+const parts={
+ ohren:{n:'Ohren',e:'👂',p:[395,50],
+  w:'Fledermäuse haben große Ohren, die oft Falten haben. Manche Arten, wie das Langohr, haben Ohren fast so lang wie ihr Körper. Viele haben vor dem Ohrloch ein kleines „Türchen“ (Ohrdeckel).',
+  f:'Sie fangen das Echo auf, das von Insekten zurückkommt. Damit hören sie sogar, wie groß ein Insekt ist und wie schnell es fliegt. Sie können ihre Ohren auch drehen.',
+  a:'Aus dünner Haut mit festem Knorpel. Der Knorpel hält die Ohren in Form.'},
+ augen:{n:'Augen',e:'👀',p:[345,128],
+  w:'Fledermäuse haben kleine schwarze Knopfaugen. Sie sind nicht blind! Der Spruch „blind wie eine Fledermaus“ stimmt nicht.',
+  f:'Sie sehen auch in der Dämmerung gut. Bei ganz tiefer Dunkelheit hilft ihnen das Echo. Flughunde haben große Augen und sehen sehr gut.',
+  a:'Wie bei dir: eine Linse, eine Netzhaut und ein Sehnerv zum Gehirn.'},
+ nase:{n:'Nase',e:'👃',p:[447,168],
+  w:'Mit der Nase riechen Fledermäuse. Hufeisennasen haben um die Nase eine Hautfalte in Hufeisenform.',
+  f:'Fledermaus-Mamas erkennen ihr Baby am Geruch, auch wenn viele Babys zusammen sind. Bei Hufeisennasen kommt der Ultraschall durch die Nase und die Hautfalte bündelt ihn wie ein Trichter.',
+  a:'Aus Haut, Knorpel und Riechzellen.'},
+ zaehne:{n:'Mund und Zähne',e:'🦷',p:[345,190],
+  w:'Fledermäuse haben kleine, spitze Zähne. Die Zwergfledermaus hat 34 Zähne. Keine Angst: Die Zähne sind winzig!',
+  f:'Sie zerbeißen damit Mücken, Falter und Käfer. Die meisten rufen ihren Ultraschall im Hals (Kehlkopf) und schicken ihn aus dem Mund. Bei Vampirfledermäusen in Südamerika sind zwei Zähne scharf wie Rasierklingen, aber bei uns gibt es keine.',
+  a:'Aus hartem Zahnschmelz, wie deine Zähne. Fledermaus-Babys haben winzige Milchzähne mit Häkchen und halten sich damit bei Mama fest.'},
+ fluegel:{n:'Flügel (Flughaut)',e:'🪽',p:[160,205],
+  w:'Der Flügel ist eine sehr dünne, dehnbare Haut. Sie spannt sich zwischen den langen Fingern, dem Körper und den Beinen, wie bei einem Regenschirm.',
+  f:'Damit fliegt die Fledermaus sehr wendig, sie kann kurze Kurven fliegen und sogar in der Luft Insekten fangen. Die Haut fühlt mit kleinen Härchen den Luftstrom. Sie hilft auch, die Körpertemperatur zu halten. Im Winterschlaf wickelt sich die Fledermaus darin ein wie in eine Decke.',
+  a:'Aus zwei hauchdünnen Hautschichten, mit Blutgefäßen, Nerven und feinen Muskeln. Es gibt keine Federn. Kleine Löcher heilen schnell wieder zu.'},
+ finger:{n:'Fingerknochen',e:'🦴',p:[130,150],
+  w:'Der Flügel ist eigentlich eine Hand! Vier Finger sind ganz lang geworden. Darum heißen Fledermäuse auch „Handflügler“.',
+  f:'Die Finger spannen die Flughaut auf. Beim Fliegen können die Finger die Flügelform verändern, zum Beispiel weit machen zum Gleiten oder eng zum Abbiegen.',
+  a:'Aus dünnen, leichten Knochen, wie unsere Finger, nur viel länger. Leicht sein ist wichtig zum Fliegen.'},
+ daumen:{n:'Daumen',e:'👍',p:[200,70],
+  w:'Der Daumen ist der einzige Finger, der nicht in der Flughaut steckt. Er ist klein und hat eine Kralle.',
+  f:'Damit klettert die Fledermaus, hält sich an Wänden fest, krabbelt am Dach und putzt sich.',
+  a:'Aus einem kleinen Knochen mit einer Kralle aus Horn, wie unsere Fingernägel.'},
+ fuesse:{n:'Füße und Krallen',e:'🦶',p:[330,372],
+  w:'Die Hinterbeine sind klein und schwach. Die Krallen sind scharf und gebogen. Die Knie zeigen nach hinten.',
+  f:'Zum Schlafen hängt sich die Fledermaus kopfüber auf. Ihr eigenes Gewicht zieht an den Sehnen und schließt die Krallen von selbst. Sie braucht keine Kraft und rutscht auch im Schlaf nicht ab.',
+  a:'Aus Knochen, Sehnen und Krallen aus Horn.'},
+ schwanz:{n:'Schwanzflughaut',e:'🪁',p:[470,350],
+  w:'Zwischen den Hinterbeinen spannt sich noch eine Haut, die Schwanzflughaut.',
+  f:'Sie wirkt wie ein Steuer und eine Bremse beim Fliegen. Manche Arten fangen damit Insekten wie in einem Kescher. Bei der Geburt fängt sie manchmal das Baby auf.',
+  a:'Aus dünner Haut, gestützt von den Hinterbeinen und dem Schwanz.'},
+ fell:{n:'Fell',e:'🧸',p:[450,255],
+  w:'Der Körper ist mit weichem, dichtem Fell bedeckt, meistens braun oder grau. Das ist ein Zeichen dafür, dass Fledermäuse Säugetiere sind.',
+  f:'Das Fell hält die Fledermaus warm. Sie putzt es oft mit Zunge und Daumenkralle. Der Körper ist sehr leicht: Eine Zwergfledermaus wiegt etwa 5 Gramm.',
+  a:'Aus Haaren, wie bei Katzen oder Hunden. Die Flügel haben fast kein Fell.'}
+};
+const svg=$('#batsvg');
+{const w=$('#wingL'),c=w.cloneNode(true);c.removeAttribute('id');c.setAttribute('transform','translate(800,0) scale(-1,1)');w.after(c);}
+function selPart(k){
+  const p=parts[k];if(!p)return;
+  svg.querySelectorAll('.part').forEach(e=>e.classList.toggle('sel',e.dataset.k===k));
+  $('#info').innerHTML=`<h3>${p.e} ${p.n}</h3><p><b>Was ist das?</b> ${p.w}</p><p><b>Wofür ist es da?</b> ${p.f}</p><p><b>Woraus besteht es?</b> ${p.a}</p>`;
+}
+svg.querySelectorAll('.part').forEach(e=>e.onclick=()=>selPart(e.dataset.k));
+$('#pins').innerHTML=Object.entries(parts).map(([k,p],i)=>`<g class="pin" data-k="${k}" style="cursor:pointer"><circle cx="${p.p[0]}" cy="${p.p[1]}" r="14"/><text x="${p.p[0]}" y="${p.p[1]+6}">${i+1}</text></g>`).join('');
+svg.querySelectorAll('.pin').forEach(e=>e.onclick=()=>selPart(e.dataset.k));
+$('#partbtns').innerHTML=Object.entries(parts).map(([k,p],i)=>`<button class="btn" data-k="${k}">${i+1} ${p.n}</button>`).join('');
+document.querySelectorAll('#partbtns .btn').forEach(b=>b.onclick=()=>selPart(b.dataset.k));
+
+/* Arten-Galerie */
+const arten=[
+ ['zwerg','Zwergfledermaus','Pipistrellus pipistrellus','Deutschland',
+  'Die häufigste Fledermaus bei uns. Sie wiegt nur etwa 5 Gramm und wohnt gern in Spalten an Häusern. Sie jagt Mücken, oft schon in der Dämmerung.','Gilles San Martin','CC BY-SA 2.0','https://commons.wikimedia.org/wiki/File:Pipistrellus_pipistrellus_(5933130195).jpg'],
+ ['mausohr','Großes Mausohr','Myotis myotis','Deutschland',
+  'Eine der größten Fledermäuse in Deutschland, ihre Flügel sind etwa 40 cm breit. Sie wohnt auf großen Dachböden von Kirchen und läuft oft am Boden, um Laufkäfer zu fangen.','Petr Vodička','CC BY-SA 4.0','https://commons.wikimedia.org/wiki/File:Bat-Myotis-myotis.jpg'],
+ ['langohr','Braunes Langohr','Plecotus auritus','Deutschland',
+  'Ihre Ohren sind fast so lang wie der ganze Körper! Sie fliegt ganz leise und kann sogar wie ein Hubschrauber in der Luft stehen. Ihre Beute, zum Beispiel Falter, pflückt sie manchmal von Blättern.','Fourrure','CC BY-SA 2.0','https://commons.wikimedia.org/wiki/File:Plecotus_auritus_2013-2_(cropped).jpg'],
+ ['wasser','Wasserfledermaus','Myotis daubentonii','Deutschland',
+  'Sie jagt dicht über Teichen und Flüssen und fängt Insekten direkt von der Wasseroberfläche, manchmal mit den Füßen.','Rauno Kalda','CC BY-SA 4.0','https://commons.wikimedia.org/wiki/File:Daubenton%27s_bat_(Myotis_daubentonii).jpg'],
+ ['hufeisen','Große Hufeisennase','Rhinolophus ferrumequinum','Europa, Asien',
+  'Ihre Nase hat die Form eines Hufeisens. Sie ruft den Ultraschall durch die Nase. Beim Schlafen wickelt sie sich in ihre Flügel wie in einen Mantel. In Deutschland ist sie sehr selten.','Charles J. Sharp','CC BY-SA 4.0','https://commons.wikimedia.org/wiki/File:Greater_horseshoe_bat_(Rhinolophus_ferrumequinum)_Hrdovicka.jpg'],
+ ['flughund','Indischer Flughund','Pteropus giganteus','Südasien',
+  'Ein Riese: Die Flügel sind etwa 1,5 Meter breit. Flughunde fressen Früchte und trinken Nektar und haben ein Gesicht wie ein Fuchs oder Hund. Sie brauchen keinen Ultraschall, sie sehen und riechen gut.','Charles J. Sharp','CC BY-SA 4.0','https://commons.wikimedia.org/wiki/File:Indian_flying_fox_(Pteropus_giganteus_giganteus)_in_flight.jpg'],
+ ['vampir','Gemeine Vampirfledermaus','Desmodus rotundus','Mittel- und Südamerika',
+  'Nur 3 von über 1400 Arten trinken Blut, und die leben weit weg von uns. Sie lecken ein bisschen Blut von schlafenden Tieren wie Kühen. Sie können sogar gut auf dem Boden laufen.','Charles J. Sharp','CC BY-SA 4.0','https://commons.wikimedia.org/wiki/File:Common_vampire_bat_(Desmodus_rotundus)_Rio_Negro.jpg'],
+ ['hummel','Hummelfledermaus','Craseonycteris thonglongyai','Thailand und Myanmar',
+  'Eine der kleinsten Säugetiere der Welt: nur etwa 2 Gramm schwer, so viel wie ein Cent-Stück. Sie wohnt in Kalksteinhöhlen und ist sehr selten.','Jan Ebr & Ivana Ebrová','CC BY 4.0','https://commons.wikimedia.org/wiki/File:Craseonycteris_thonglongyai_414843825.jpg']
+];
+$('#gallery').innerHTML=arten.map((a,i)=>`<div class="art" data-i="${i}"><img src="images/${a[0]}.jpg" alt="${a[1]}" loading="lazy"><div>${a[1]}</div></div>`).join('');
+document.querySelectorAll('.art').forEach(el=>el.onclick=()=>{
+  const a=arten[+el.dataset.i];
+  document.querySelectorAll('.art').forEach(x=>x.classList.toggle('sel',x===el));
+  const c=$('#artinfo');c.style.display='flex';
+  c.innerHTML=`<img src="images/${a[0]}.jpg" alt="${a[1]}"><div class="txt"><h3>${a[1]}</h3><small><i>${a[2]}</i> · 🌍 ${a[3]}</small><p>${a[4]}</p><small>Foto: ${a[5]}, ${a[6]}</small></div>`;
+  c.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+$('#credits').innerHTML=arten.map(a=>`<a style="color:var(--moon)" href="${a[7]}" target="_blank">${a[1]}: ${a[5]} (${a[6]})</a>`).join(' · ');
+
+/* Fakten-Karten */
+const facts=[
+ ['🪽','Fliegen','Fledermäuse sind die einzigen Säugetiere, die richtig fliegen können. Ihre Flügel sind eine dünne Haut zwischen den langen Fingern.'],
+ ['🔊','Echoortung','Sie rufen Ultraschall und hören das Echo. So finden sie im Dunkeln Futter und den Weg.'],
+ ['🙃','Kopfüber','Zum Schlafen hängen sie mit dem Kopf nach unten. Ihre Füße halten sich von selbst fest, ohne Kraft.'],
+ ['🦟','Mückenfresser','Eine Zwergfledermaus kann in einer Nacht bis zu 1000 Mücken fressen. Das hilft uns!'],
+ ['❄️','Winterschlaf','Im Winter gibt es kaum Insekten. Darum schlafen viele Fledermäuse ganz lange. Ihr Herz schlägt dann ganz langsam.'],
+ ['🍼','Fledermaus-Babys','Die Mama bekommt meist nur ein Baby. Es trinkt Milch. Viele Mamas wohnen zusammen in einer „Wochenstube“.'],
+ ['🐝','Ganz klein','Die Hummelfledermaus ist so leicht wie ein Cent-Stück und eine der kleinsten Säugetiere der Welt.'],
+ ['🦇','Ganz groß','Flughunde sind die größten Fledermäuse. Ihre Flügel sind bis zu 1,7 Meter breit!'],
+ ['🛡️','Geschützt','In Deutschland stehen alle Fledermäuse unter Schutz. Man darf sie nicht stören oder fangen.'],
+ ['🎂','Alt werden','Manche Fledermäuse werden über 20 Jahre alt. Das ist sehr alt für so ein kleines Tier.']
+];
+$('#cards').innerHTML=facts.map(f=>`<div class="flip"><div><div class="f"><span>${f[0]}</span>${f[1]}</div><div class="b">${f[2]}</div></div></div>`).join('');
+document.querySelectorAll('.flip').forEach(c=>c.onclick=()=>c.classList.toggle('on'));
+
+/* Echo-Spiel */
+const sky=$('#sky');let score=0,timer;
+function ring(x,y){const r=document.createElement('div');r.className='ring';r.style.left=x+'px';r.style.top=y+'px';sky.appendChild(r);setTimeout(()=>r.remove(),800);}
+function chirp(){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.setValueAtTime(1800,a.currentTime);o.frequency.exponentialRampToValueAtTime(600,a.currentTime+.15);g.gain.setValueAtTime(.1,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.2);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.2);}catch(e){}}
+sky.addEventListener('click',e=>{if(e.target.classList.contains('moth'))return;const b=sky.getBoundingClientRect();ring(e.clientX-b.left,e.clientY-b.top);chirp();});
+function spawn(){
+  const m=document.createElement('div');m.className='moth';m.textContent='🦋';
+  const W=sky.clientWidth-50,H=sky.clientHeight-50;
+  m.style.left=Math.random()*W+'px';m.style.top=Math.random()*H+'px';
+  m.onclick=()=>{score++;$('#score').textContent=score;m.textContent='✨';chirp();setTimeout(()=>m.remove(),300);};
+  sky.appendChild(m);
+  setTimeout(()=>{m.style.left=Math.random()*W+'px';m.style.top=Math.random()*H+'px';},50);
+  setTimeout(()=>m.remove(),4000);
+}
+function startEcho(){clearInterval(timer);score=0;$('#score').textContent=0;sky.querySelectorAll('.moth').forEach(m=>m.remove());timer=setInterval(spawn,1200);spawn();}
+$('#startEcho').onclick=startEcho;
+
+/* Quiz */
+const qs=[
+ ['Was ist eine Fledermaus?',['Ein Vogel','Ein Säugetier','Eine Maus'],1],
+ ['Wann sind Fledermäuse wach?',['Nachts','Mittags','Nur im Winter'],0],
+ ['Wie schlafen Fledermäuse?',['Auf dem Rücken','Im Stehen','Kopfüber'],2],
+ ['Was fressen unsere Fledermäuse?',['Insekten','Blut','Gras'],0],
+ ['Wie finden sie im Dunkeln ihr Futter?',['Mit Echoortung','Mit Taschenlampen','Mit Glück'],0],
+ ['Wie viele Babys bekommt eine Fledermaus meistens?',['Zehn','Eins','Keins, sie legt Eier'],1],
+ ['Was machen viele Fledermäuse im Winter?',['Sie fliegen zum Mond','Sie halten Winterschlaf','Sie bauen Schneemänner'],1]
+];
+let qi=0,pts=0;
+function showQ(){
+  if(qi>=qs.length){$('#quizq').textContent=`🎉 Geschafft! ${pts} von ${qs.length} richtig.`;$('#quizans').innerHTML='';$('#quizfb').textContent=pts>=5?'Du bist eine Fledermaus-Expertin! 🦇':'Schau dir nochmal die Fakten-Karten an und versuch es nochmal!';$('#quizNext').textContent='Nochmal 🔁';$('#quizNext').style.display='';qi=-1;return;}
+  const q=qs[qi];$('#quizq').textContent=`Frage ${qi+1}: ${q[0]}`;$('#quizfb').textContent='';$('#quizNext').style.display='none';
+  $('#quizans').innerHTML=q[1].map((a,i)=>`<button class="ans" data-i="${i}">${a}</button>`).join('');
+  document.querySelectorAll('.ans').forEach(b=>b.onclick=()=>{
+    if(document.querySelector('.ans.ok'))return;
+    const i=+b.dataset.i;
+    if(i===q[2]){b.classList.add('ok');pts++;$('#quizfb').textContent='Richtig! 🌟';$('#quizNext').textContent='Weiter ➡';$('#quizNext').style.display='';}
+    else{b.classList.add('no');$('#quizfb').textContent='Fast! Versuch es nochmal.';}
+  });
+}
+$('#quizNext').onclick=()=>{if(qi===-1){qi=0;pts=0;}else qi++;showQ();};
+showQ();
+
+/* Referat-Folien – Rosalie kann hier den Text anpassen */
+const slides=[
+ ['🦇','Fledermäuse','Mein Referat von Rosalie'],
+ ['🐾','Was ist eine Fledermaus?','Fledermäuse sind Säugetiere. Sie sind keine Vögel und keine Mäuse.'],
+ ['🪽','Sie können fliegen!','Fledermäuse sind die einzigen Säugetiere, die richtig fliegen können. Ihre Flügel sind aus dünner Haut.'],
+ ['🌙','Nachts wach','Sie schlafen am Tag und hängen dabei kopfüber. Nachts gehen sie auf Jagd.'],
+ ['🔊','Echoortung','Fledermäuse rufen ganz hohe Töne. Das Echo sagt ihnen, wo das Futter ist.'],
+ ['🦟','Was fressen sie?','Unsere Fledermäuse fressen Insekten. Eine kleine Fledermaus frisst bis zu 1000 Mücken in einer Nacht.'],
+ ['❄️','Im Winter','Im Winter gibt es keine Insekten. Dann halten Fledermäuse Winterschlaf.'],
+ ['🍼','Babys','Eine Fledermaus-Mama bekommt meistens ein Baby. Es trinkt Milch.'],
+ ['🛡️','Schutz','Alle Fledermäuse in Deutschland sind geschützt. Wir dürfen sie nicht stören.'],
+ ['🎉','Danke fürs Zuhören!','Habt ihr noch Fragen?']
+];
+let si=0;
+function show(){const s=slides[si];$('#stage').innerHTML=`<div class="big">${s[0]}</div><h3>${s[1]}</h3><p>${s[2]}</p>`;$('#pg').textContent=`${si+1} / ${slides.length}`;}
+const go=d=>{si=Math.min(slides.length-1,Math.max(0,si+d));speechSynthesis.cancel();show();};
+$('#prev').onclick=()=>go(-1);$('#next').onclick=()=>go(1);
+$('#say').onclick=()=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(slides[si][1]+'. '+slides[si][2]);u.lang='de-DE';u.rate=.85;speechSynthesis.speak(u);};
+$('#fs').onclick=()=>{document.body.classList.toggle('full');};
+document.addEventListener('keydown',e=>{
+  if(!$('#ref').classList.contains('active'))return;
+  if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);
+  if(e.key==='Escape')document.body.classList.remove('full');
+});
+show();
+</script>
+</body>
+</html>
