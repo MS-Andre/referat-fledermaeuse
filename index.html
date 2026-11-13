@@ -399,9 +399,23 @@ const slides=[
 ];
 let si=0;
 function show(){const s=slides[si];$('#stage').innerHTML=`<div class="big">${s[0]}</div><h3>${s[1]}</h3><p>${s[2]}</p>`;$('#pg').textContent=`${si+1} / ${slides.length}`;}
-const go=d=>{si=Math.min(slides.length-1,Math.max(0,si+d));speechSynthesis.cancel();show();};
+const go=d=>{si=Math.min(slides.length-1,Math.max(0,si+d));if('speechSynthesis' in window)speechSynthesis.cancel();$('#say').textContent='🔈 Vorlesen';show();};
 $('#prev').onclick=()=>go(-1);$('#next').onclick=()=>go(1);
-$('#say').onclick=()=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(slides[si][1]+'. '+slides[si][2]);u.lang='de-DE';u.rate=.85;speechSynthesis.speak(u);};
+function say(){
+  if(!('speechSynthesis' in window)){alert('Dein Browser kann leider nicht vorlesen.');return;}
+  const ss=speechSynthesis;
+  if(ss.speaking||ss.pending){ss.cancel();$('#say').textContent='🔈 Vorlesen';return;}
+  const u=new SpeechSynthesisUtterance(slides[si][1]+'. '+slides[si][2]);
+  const vs=ss.getVoices(),v=vs.find(x=>x.lang==='de-DE')||vs.find(x=>x.lang&&x.lang.toLowerCase().startsWith('de'));
+  if(v){u.voice=v;u.lang=v.lang;}else u.lang='de-DE';
+  u.rate=.85;u.volume=1;
+  u.onend=u.onerror=()=>{$('#say').textContent='🔈 Vorlesen';};
+  $('#say').textContent='⏹ Stopp';
+  ss.resume();ss.speak(u);
+  setTimeout(()=>{if(!vs.length&&!ss.getVoices().length&&!ss.speaking){$('#say').textContent='🔈 Vorlesen';alert('Auf diesem Gerät ist keine deutsche Stimme installiert. Prüfe in den Einstellungen die Sprachausgabe und dass das Gerät nicht stumm ist.');}},1500);
+}
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>{};
+$('#say').onclick=say;
 $('#fs').onclick=()=>{document.body.classList.toggle('full');};
 document.addEventListener('keydown',e=>{
   if(!$('#ref').classList.contains('active'))return;
